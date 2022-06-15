@@ -1,16 +1,13 @@
 package main;
+
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.SQLOutput;
-import java.sql.SQLSyntaxErrorException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.RecursiveAction;
 
 public class ParseNode extends RecursiveAction {
     private Node node;
-
     public Node getNode() {
         return node;
     }
@@ -24,19 +21,12 @@ public class ParseNode extends RecursiveAction {
         node.getParseNode();
         try {
             DBConnection.fullTheDb(node.getPath(), node.getStatusCode(), node.getContentOfPage());
-//            StringBuffer builder = lemmatizer.getInsertQuery();
-//            DBConnection.executeMultiInsert(builder);
-//            int pageId = DBConnection.getPageId(node.getPath());
-//            lemmatizer.queryForIndex(pageId);
-
-        } catch (SQLSyntaxErrorException e) {
-            e.printStackTrace();
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        catch (Exception e){
-            System.out.println("url - " + url);
+            Lemmatizer lemmatizer = new Lemmatizer(node.getTitle(), node.getBodyText());
+            StringBuffer builder = lemmatizer.getInsertQuery();
+            DBConnection.executeMultiInsert(builder);
+            int pageId = DBConnection.getPageId(node.getPath());
+            lemmatizer.queryForIndex(pageId);
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
         Set<ParseNode> taskList = new CopyOnWriteArraySet<>();
@@ -55,10 +45,12 @@ public class ParseNode extends RecursiveAction {
             }
         }
         for (ParseNode task : taskList) {
-            try{task.join();}
-            catch (Exception e){
+            try {
+                task.join();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
 }
