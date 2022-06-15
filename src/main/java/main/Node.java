@@ -63,12 +63,9 @@ public class Node {
                 String linkHref = link.attr("href");
                 Pattern pattern = Pattern.compile(domain + "/[\\w,\\D]+(.html)?/$");
                 Matcher matcher = pattern.matcher(linkHref);
-
-
 //                Pattern pattern2 = Pattern.compile("^(/[\\w,-,_])+(.html)?/$");
                 Pattern pattern2 = Pattern.compile("^(/[\\w,-,_]+)+(.html)?$");
                 Matcher matcher2 = pattern2.matcher(linkHref);
-
                 Pattern pattern3 = Pattern.compile("^/[\\w,-,_]+(.html)?/$");
                 Matcher matcher3 = pattern3.matcher(linkHref);
                 if (matcher.matches()) {
@@ -95,15 +92,12 @@ public class Node {
     public static String getTitle(String url) {
         return titleMap.get(url);
     }
-
     public String getPath() {
         return path;
     }
-
     public String getTitle() {
         return title;
     }
-
     public String getBodyText() {
         return bodyText;
     }
